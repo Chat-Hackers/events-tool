@@ -5,8 +5,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import handleMessage from "./messages";
 import { sendMessage } from './requests';
-import { generateRainbow } from './rainbow';
-import { getRainbowsByRoomId, insertRainbow } from './duckdb';
+import { } from './duckdb';
 import beginSchedule from "./scheduler";
 
 const { secret } = process.env;
@@ -14,13 +13,13 @@ const { secret } = process.env;
 const port = 5056;
 
 const moduleRegistration = {
-  id: "rainbow",
+  id: "events",
   uuid: uuidv4(),
   url: `http://localhost:${port}`,
-  emoji: "🌈",
-  wake_word: "rainbow",
-  title: "Rainbow App",
-  description: "This module sends a new rainbow every day",
+  emoji: "🗓️",
+  wake_word: "events",
+  title: "Events Reminder",
+  description: "Sends reminders of upcoming events to the group",
   secret,
   event_types: [
     "m.room.message"
@@ -45,7 +44,7 @@ async function start() {
   app.post("/", async (req, res) => {
     const { event } = req.body;
 
-    let response = {};
+    let response: { message?: string } | undefined = {};
 
     if (event.type === "m.room.message")
       response = await handleMessage(event);
@@ -55,29 +54,22 @@ async function start() {
     res.send({ success: true, response });
   });
 
-  app.get("/api/rainbows", async (req, res) => {
+  app.get("/api/events", async (req, res) => {
     const { roomId } = req.query;
 
-    const rainbows = await getRainbowsByRoomId(roomId as string);
-
-    console.log(rainbows)
-
-    res.send(rainbows.map(rainbow => ({ ...rainbow, sent: new Date(rainbow.sent.toString()) })));
+    res.send();
   })
 
-  app.post("/api/rainbow", async (req, res) => {
+  app.post("/api/event", async (req, res) => {
     const { roomId } = req.query;
+    const { url } = req.body;
 
-    console.log("rainbow requested")
+    res.send({ success: true })
+  })
 
-    const rainbow = generateRainbow();
-
-    const response = await sendMessage(roomId as string, `Here's a new rainbow, from the dashboard\n${rainbow}`);
-    console.log(response)
-    const result = await response.json();
-    console.log(result)
-
-    insertRainbow(roomId as string, rainbow);
+  app.delete("api/event", async (req, res) => {
+    const { roomId } = req.query;
+    const { url } = req.body;
 
     res.send({ success: true })
   })

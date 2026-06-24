@@ -1,7 +1,7 @@
 {
-  "name": "rainbow-chathackers-tool",
+  "name": "events-tool",
   "version": "1.0.0",
-  "description": "Rainbow tool for Matrix chat integration tools",
+  "description": "Events tool for Chat Hackers chat customisation tools",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",

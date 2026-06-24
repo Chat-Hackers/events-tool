@@ -1,18 +1,18 @@
-import { DuckDBConnection, DuckDBInstance, timestampSecondsValue } from "@duckdb/node-api";
+import { DuckDBConnection, DuckDBInstance } from "@duckdb/node-api";
 
 let connection: DuckDBConnection;
 
 export async function startDuckDB() {
-    const rainbowDuckDBFileName = "rainbow_duckdb.db";
+    const eventsDuckDBFileName = "events_duckdb.db";
 
-    const instance = await DuckDBInstance.create(rainbowDuckDBFileName);
+    const instance = await DuckDBInstance.create(eventsDuckDBFileName);
     connection = await instance.connect();
 
     const tables = [
         {
-            name: "Rainbows",
+            name: "Events",
             creationCommand:
-                "CREATE TABLE Rainbows (room_id VARCHAR, rainbow VARCHAR, sent TIMESTAMP_S);",
+                "CREATE TABLE Events (room_id VARCHAR, event_url VARCHAR, past BOOLEAN);",
         }
     ]
 
@@ -31,30 +31,38 @@ export async function startDuckDB() {
     });
 }
 
-export async function getRainbowsAll() {
-    const getRainbows = `SELECT * FROM Rainbows;`;
-    const prepared = await connection.prepare(getRainbows);
-    const rainbowsRows = await prepared.run();
-    const rainbows = await rainbowsRows.getRowObjects();
-    return rainbows;
+export async function getEventsAll() {
+    const getEvents = `SELECT * FROM Events;`;
+    const prepared = await connection.prepare(getEvents);
+    const eventsRows = await prepared.run();
+    const events = await eventsRows.getRowObjects();
+    return events;
 }
 
-export async function getRainbowsByRoomId(roomId: string) {
-    const getRainbows = `SELECT * FROM Rainbows WHERE room_id = $1;`;
-    const prepared = await connection.prepare(getRainbows);
+export async function getEventsByRoomId(roomId: string) {
+    const getEvents = `SELECT * FROM Events WHERE room_id = $1;`;
+    const prepared = await connection.prepare(getEvents);
     prepared.bindVarchar(1, roomId);
-    const rainbowsRows = await prepared.run();
-    const rainbows = await rainbowsRows.getRowObjects();
-    return rainbows;
+    const eventsRows = await prepared.run();
+    const events = await eventsRows.getRowObjects();
+    return events;
 }
 
-export async function insertRainbow(roomId: string, rainbow: string) {
-    const insertRainbow = `INSERT INTO Rainbows values ($1, $2, $3);`;
-    const prepared = await connection.prepare(insertRainbow);
+export async function insertEvent(roomId: string, url: string) {
+    const insertEvent = `INSERT INTO Events values ($1, $2, $3);`;
+    const prepared = await connection.prepare(insertEvent);
     prepared.bindVarchar(1, roomId);
-    prepared.bindVarchar(2, rainbow);
-    const timestamp = timestampSecondsValue(BigInt(Math.floor(Date.now() / 1000)))
-    prepared.bindTimestampSeconds(3, timestamp);
+    prepared.bindVarchar(2, url);
+    prepared.bindBoolean(3, false);
+    await prepared.run();
+    return;
+}
+
+export async function removeEvent(roomId: string, url: string) {
+    const deleteEvent = `DELETE FROM Events WHERE room_id=$1 AND event_url=$2;`;
+    const prepared = await connection.prepare(deleteEvent);
+    prepared.bindVarchar(1, roomId);
+    prepared.bindVarchar(2, url);
     await prepared.run();
     return;
 }
