@@ -12,7 +12,7 @@ export async function startDuckDB() {
         {
             name: "Events",
             creationCommand:
-                "CREATE TABLE Events (room_id VARCHAR, event_url VARCHAR, past BOOLEAN);",
+                "CREATE TABLE Events (room_id VARCHAR NOT NULL, event_url VARCHAR NOT NULL, past BOOLEAN NOT NULL);",
         }
     ]
 
@@ -54,6 +54,16 @@ export async function insertEvent(roomId: string, url: string) {
     prepared.bindVarchar(1, roomId);
     prepared.bindVarchar(2, url);
     prepared.bindBoolean(3, false);
+    await prepared.run();
+    return;
+}
+
+export async function updateEvent(roomId: string, url: string, past: boolean) {
+    const updateEvent = `UPDATE Events SET past = $3 WHERE room_id = $1 AND event_url = $2`;
+    const prepared = await connection.prepare(updateEvent);
+    prepared.bindVarchar(1, roomId);
+    prepared.bindVarchar(2, url);
+    prepared.bindBoolean(3, past);
     await prepared.run();
     return;
 }

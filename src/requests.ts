@@ -11,3 +11,7 @@ export async function sendMessage(roomId: string, message: string) {
         }
     })
 }
+
+export async function getEvent(url: string) {
+    return fetch(url);
+}
