@@ -5,7 +5,8 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import handleMessage from "./messages";
 import { sendMessage } from './requests';
-import { } from './duckdb';
+import { tryGetEvent } from './events';
+import { getEventsByRoomId, insertEvent, removeEvent } from './duckdb';
 import beginSchedule from "./scheduler";
 
 const { secret } = process.env;
@@ -57,19 +58,39 @@ async function start() {
   app.get("/api/events", async (req, res) => {
     const { roomId } = req.query;
 
-    res.send();
+    const eventUrls = await getEventsByRoomId(roomId as string);
+    const events = (
+      await Promise.all(
+        eventUrls.map(async (event) => {
+          const eventDetails = await tryGetEvent(event.event_url as string);
+          if (!eventDetails) return null;
+          return {
+            name: eventDetails.name,
+            startDate: eventDetails.startDate,
+            roomId: event.room_id as string,
+            url: event.event_url as string
+          };
+        })
+      )
+    ).filter((event) => event !== null).filter(event => event.roomId === roomId);
+
+    res.send(events);
   })
 
   app.post("/api/event", async (req, res) => {
     const { roomId } = req.query;
     const { url } = req.body;
 
+    await insertEvent(roomId as string, url);
+
     res.send({ success: true })
   })
 
-  app.delete("api/event", async (req, res) => {
+  app.delete("/api/event", async (req, res) => {
     const { roomId } = req.query;
     const { url } = req.body;
+
+    await removeEvent(roomId as string, url);
 
     res.send({ success: true })
   })

@@ -9,9 +9,12 @@ export async function getEvents(roomId: string) {
 }
 
 export async function postEvent(roomId: string, url: string) {
-    const eventsResponse = await fetch(`${BASE_URL}/api/events?roomId=${roomId}`, {
+    const eventsResponse = await fetch(`${BASE_URL}/api/event?roomId=${roomId}`, {
         method: "POST",
-        body: JSON.stringify({ url })
+        body: JSON.stringify({ url }),
+        headers: {
+            "Content-Type": "application/json"
+        }
     });
     const eventsResult = await eventsResponse.json();
 
@@ -19,9 +22,12 @@ export async function postEvent(roomId: string, url: string) {
 }
 
 export async function deleteEvent(roomId: string, url: string) {
-    const eventsResponse = await fetch(`${BASE_URL}/api/events?roomId=${roomId}`, {
+    const eventsResponse = await fetch(`${BASE_URL}/api/event?roomId=${roomId}`, {
         method: "DELETE",
-        body: JSON.stringify({ url })
+        body: JSON.stringify({ url }),
+        headers: {
+            "Content-Type": "application/json"
+        }
     });
     const eventsResult = await eventsResponse.json();
 
