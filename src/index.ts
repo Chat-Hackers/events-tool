@@ -18,7 +18,7 @@ const moduleRegistration = {
   uuid: uuidv4(),
   url: `http://localhost:${port}`,
   emoji: "🗓️",
-  wake_word: "events",
+  introduction: "Post links to events from eventbrite or luma to track them in the group.",
   title: "Events Reminder",
   description: "Sends reminders of upcoming events to the group",
   secret,
