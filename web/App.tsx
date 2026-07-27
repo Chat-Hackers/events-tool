@@ -39,7 +39,7 @@ export default function App() {
   }, []);
 
   return (
-    <div>
+    <>
       <h1>Event Reminders</h1>
       <input
         type="text"
@@ -67,6 +67,6 @@ export default function App() {
           )}
         </>
       ))}
-    </div>
+    </>
   );
 }
