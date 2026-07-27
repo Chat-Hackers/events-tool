@@ -36,14 +36,14 @@ async function checkEvents() {
         const diffSeconds = now.until(start).total("seconds");
         const toleranceSeconds = MINUTES * 60;
 
-        const fourWeeksAway = diffSeconds >= 0 && diffSeconds - 4 * 7 * 24 * 60 * 60 <= toleranceSeconds;
-        const threeWeeksAway = diffSeconds >= 0 && diffSeconds - 3 * 7 * 24 * 60 * 60 <= toleranceSeconds;
-        const twoWeeksAway = diffSeconds >= 0 && diffSeconds - 2 * 7 * 24 * 60 * 60 <= toleranceSeconds;
-        const oneWeekAway = diffSeconds >= 0 && diffSeconds - 2 * 7 * 24 * 60 * 60 <= toleranceSeconds;
-        const threeDaysAway = diffSeconds >= 0 && diffSeconds - 3 * 24 * 60 * 60 <= toleranceSeconds;
-        const twoDaysAway = diffSeconds >= 0 && diffSeconds - 2 * 24 * 60 * 60 <= toleranceSeconds;
-        const oneDayAway = diffSeconds >= 0 && diffSeconds - 24 * 60 * 60 <= toleranceSeconds;
-        const oneHourAway = diffSeconds >= 0 && diffSeconds - 60 * 60 <= toleranceSeconds;
+        const fourWeeksAway = diffSeconds - 4 * 7 * 24 * 60 * 60 >= 0 && diffSeconds - 4 * 7 * 24 * 60 * 60 <= toleranceSeconds;
+        const threeWeeksAway = diffSeconds - 3 * 7 * 24 * 60 * 60 >= 0 && diffSeconds - 3 * 7 * 24 * 60 * 60 <= toleranceSeconds;
+        const twoWeeksAway = diffSeconds - 2 * 7 * 24 * 60 * 60 >= 0 && diffSeconds - 2 * 7 * 24 * 60 * 60 <= toleranceSeconds;
+        const oneWeekAway = diffSeconds - 2 * 7 * 24 * 60 * 60 >= 0 && diffSeconds - 2 * 7 * 24 * 60 * 60 <= toleranceSeconds;
+        const threeDaysAway = diffSeconds - 3 * 24 * 60 * 60 >= 0 && diffSeconds - 3 * 24 * 60 * 60 <= toleranceSeconds;
+        const twoDaysAway = diffSeconds - 2 * 24 * 60 * 60 >= 0 && diffSeconds - 2 * 24 * 60 * 60 <= toleranceSeconds;
+        const oneDayAway = diffSeconds - 24 * 60 * 60 >= 0 && diffSeconds - 24 * 60 * 60 <= toleranceSeconds;
+        const oneHourAway = diffSeconds - 60 * 60 >= 0 && diffSeconds - 60 * 60 <= toleranceSeconds;
         const happeningNow = diffSeconds >= 0 && diffSeconds <= toleranceSeconds;
 
         if (fourWeeksAway)
