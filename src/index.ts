@@ -28,7 +28,7 @@ const moduleRegistration = {
 }
 
 function generateRegistrationFile() {
-  fs.writeFileSync(`./${moduleRegistration.id}.json`, JSON.stringify(moduleRegistration));
+  fs.writeFileSync(`./${moduleRegistration.id}.json`, JSON.stringify(moduleRegistration, null, 2));
 }
 
 async function start() {
