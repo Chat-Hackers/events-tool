@@ -39,7 +39,7 @@ async function checkEvents() {
         const fourWeeksAway = diffSeconds - 4 * 7 * 24 * 60 * 60 >= 0 && diffSeconds - 4 * 7 * 24 * 60 * 60 <= toleranceSeconds;
         const threeWeeksAway = diffSeconds - 3 * 7 * 24 * 60 * 60 >= 0 && diffSeconds - 3 * 7 * 24 * 60 * 60 <= toleranceSeconds;
         const twoWeeksAway = diffSeconds - 2 * 7 * 24 * 60 * 60 >= 0 && diffSeconds - 2 * 7 * 24 * 60 * 60 <= toleranceSeconds;
-        const oneWeekAway = diffSeconds - 2 * 7 * 24 * 60 * 60 >= 0 && diffSeconds - 2 * 7 * 24 * 60 * 60 <= toleranceSeconds;
+        const oneWeekAway = diffSeconds - 1 * 7 * 24 * 60 * 60 >= 0 && diffSeconds - 2 * 7 * 24 * 60 * 60 <= toleranceSeconds;
         const threeDaysAway = diffSeconds - 3 * 24 * 60 * 60 >= 0 && diffSeconds - 3 * 24 * 60 * 60 <= toleranceSeconds;
         const twoDaysAway = diffSeconds - 2 * 24 * 60 * 60 >= 0 && diffSeconds - 2 * 24 * 60 * 60 <= toleranceSeconds;
         const oneDayAway = diffSeconds - 24 * 60 * 60 >= 0 && diffSeconds - 24 * 60 * 60 <= toleranceSeconds;
