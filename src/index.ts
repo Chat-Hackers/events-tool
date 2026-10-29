@@ -13,7 +13,7 @@ const { secret } = process.env;
 
 const port = 5057;
 
-const moduleRegistration = {
+const toolRegistration = {
   id: "events",
   uuid: uuidv4(),
   url: `http://localhost:${port}`,
@@ -22,13 +22,15 @@ const moduleRegistration = {
   title: "Events Reminder",
   description: "Sends reminders of upcoming events to the group",
   secret,
-  event_types: [
-    "m.room.message"
-  ]
+  event_types: {
+    active: [
+      "m.room.message"
+    ]
+  }
 }
 
 function generateRegistrationFile() {
-  fs.writeFileSync(`./${moduleRegistration.id}.json`, JSON.stringify(moduleRegistration, null, 2));
+  fs.writeFileSync(`./${toolRegistration.id}.json`, JSON.stringify(toolRegistration, null, 2));
 }
 
 async function start() {
