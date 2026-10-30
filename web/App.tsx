@@ -1,13 +1,16 @@
 import "./App.css";
 import { useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
-import { getEvents, postEvent, deleteEvent } from "./requests";
+import { getCalendars, getEvents, postEvent, deleteEvent, deleteCalendar } from "./requests";
 
 export default function App() {
   const [searchParams] = useSearchParams();
   const roomId = searchParams.get("roomId");
   const [events, setEvents] = useState<
     { name: string; startDate: string; url: string }[]
+  >([]);
+  const [calendars, setCalendars] = useState<
+    { room_id: string; ics_url: string; name: string | null }[]
   >([]);
   const [url, setUrl] = useState("");
   const [deleting, setDeleting] = useState("");
@@ -32,9 +35,23 @@ export default function App() {
     }
   }
 
+  async function loadCalendars(roomId: string) {
+    const calendars = await getCalendars(roomId);
+    console.log(calendars);
+    setCalendars(calendars);
+  }
+
+  async function removeCalendar(url: string) {
+    if (roomId) {
+      await deleteCalendar(roomId, url);
+      loadCalendars(roomId);
+    }
+  }
+
   useEffect(() => {
     if (roomId) {
       loadEvents(roomId);
+      loadCalendars(roomId);
     }
   }, []);
 
@@ -64,6 +81,25 @@ export default function App() {
             </>
           ) : (
             <button onClick={() => setDeleting(event.url)}>delete</button>
+          )}
+        </>
+      ))}
+      <h2>Subscribed Calendars</h2>
+      {calendars.map((calendar) => (
+        <>
+          <h3>{calendar.name ?? calendar.ics_url}</h3>
+          <a href={calendar.ics_url}>
+            <p>Calendar feed</p>
+          </a>
+          {deleting === calendar.ics_url ? (
+            <>
+              <button onClick={() => setDeleting("")}>cancel</button>
+              <button onClick={() => removeCalendar(calendar.ics_url)}>
+                confirm delete
+              </button>
+            </>
+          ) : (
+            <button onClick={() => setDeleting(calendar.ics_url)}>delete</button>
           )}
         </>
       ))}

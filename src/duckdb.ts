@@ -18,6 +18,11 @@ export async function startDuckDB() {
             name: "Events",
             creationCommand:
                 "CREATE TABLE Events (room_id VARCHAR NOT NULL, event_url VARCHAR NOT NULL, past BOOLEAN NOT NULL);",
+        },
+        {
+            name: "Calendars",
+            creationCommand:
+                "CREATE TABLE Calendars (room_id VARCHAR NOT NULL, ics_url VARCHAR NOT NULL, name VARCHAR);",
         }
     ]
 
@@ -78,6 +83,56 @@ export async function removeEvent(roomId: string, url: string) {
     const prepared = await connection.prepare(deleteEvent);
     prepared.bindVarchar(1, roomId);
     prepared.bindVarchar(2, url);
+    await prepared.run();
+    return;
+}
+
+export async function getCalendarsAll() {
+    const getCalendars = `SELECT * FROM Calendars;`;
+    const prepared = await connection.prepare(getCalendars);
+    const calendarsRows = await prepared.run();
+    const calendars = await calendarsRows.getRowObjects();
+    return calendars;
+}
+
+export async function getCalendarsByRoomId(roomId: string) {
+    const getCalendars = `SELECT * FROM Calendars WHERE room_id = $1;`;
+    const prepared = await connection.prepare(getCalendars);
+    prepared.bindVarchar(1, roomId);
+    const calendarsRows = await prepared.run();
+    const calendars = await calendarsRows.getRowObjects();
+    return calendars;
+}
+
+export async function getCalendarByUrl(roomId: string, icsUrl: string) {
+    const getCalendars = `SELECT * FROM Calendars WHERE room_id = $1 AND ics_url = $2;`;
+    const prepared = await connection.prepare(getCalendars);
+    prepared.bindVarchar(1, roomId);
+    prepared.bindVarchar(2, icsUrl);
+    const calendarsRows = await prepared.run();
+    const calendars = await calendarsRows.getRowObjects();
+    return calendars.length > 0 ? calendars[0] : undefined;
+}
+
+export async function insertCalendar(roomId: string, icsUrl: string, name: string | null) {
+    const insertCalendar = `INSERT INTO Calendars values ($1, $2, $3);`;
+    const prepared = await connection.prepare(insertCalendar);
+    prepared.bindVarchar(1, roomId);
+    prepared.bindVarchar(2, icsUrl);
+    if (name === null) {
+        prepared.bindNull(3);
+    } else {
+        prepared.bindVarchar(3, name);
+    }
+    await prepared.run();
+    return;
+}
+
+export async function removeCalendar(roomId: string, icsUrl: string) {
+    const deleteCalendar = `DELETE FROM Calendars WHERE room_id=$1 AND ics_url=$2;`;
+    const prepared = await connection.prepare(deleteCalendar);
+    prepared.bindVarchar(1, roomId);
+    prepared.bindVarchar(2, icsUrl);
     await prepared.run();
     return;
 }

@@ -4,9 +4,8 @@ import * as fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import handleMessage from "./messages";
-import { sendMessage } from './requests';
 import { tryGetEvent } from './events';
-import { getEventsByRoomId, insertEvent, removeEvent } from './duckdb';
+import { getCalendarsByRoomId, getEventsByRoomId, insertEvent, removeCalendar, removeEvent } from './duckdb';
 import beginSchedule from "./scheduler";
 
 const { secret } = process.env;
@@ -18,7 +17,7 @@ const toolRegistration = {
   uuid: uuidv4(),
   url: `http://localhost:${port}`,
   emoji: "🗓️",
-  introduction: "Post links to events from eventbrite or luma to track them in the group.",
+  introduction: "Post links to events from eventbrite or luma, or .ics calendar feeds, to track them in the group.",
   title: "Events Reminder",
   description: "Sends reminders of upcoming events to the group",
   secret,
@@ -93,6 +92,23 @@ async function start() {
     const { url } = req.body;
 
     await removeEvent(roomId as string, url);
+
+    res.send({ success: true })
+  })
+
+  app.get("/api/calendars", async (req, res) => {
+    const { roomId } = req.query;
+
+    const calendars = await getCalendarsByRoomId(roomId as string);
+
+    res.send(calendars);
+  })
+
+  app.delete("/api/calendar", async (req, res) => {
+    const { roomId } = req.query;
+    const { url } = req.body;
+
+    await removeCalendar(roomId as string, url);
 
     res.send({ success: true })
   })
